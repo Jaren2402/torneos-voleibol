@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Agendar Partido{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">➕ Agendar Nuevo Partido</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Torneo *</label>
+                                <select name="torneo" class="form-select" required>
+                                    <option value="">Seleccionar torneo...</option>
+                                    {% for torneo in torneos %}
+                                    <option value="{{ torneo.id }}">{{ torneo.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha *</label>
+                                <input type="date" name="fecha" class="form-control" 
+                                       min="{{ hoy|date:'Y-m-d' }}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hora *</label>
+                                <input type="time" name="hora" class="form-control" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Equipo Local *</label>
+                                <select name="equipo_local" class="form-select" required>
+                                    <option value="">Seleccionar equipo...</option>
+                                    {% for equipo in equipos %}
+                                    <option value="{{ equipo.id }}">{{ equipo.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Equipo Visitante *</label>
+                                <select name="equipo_visitante" class="form-select" required>
+                                    <option value="">Seleccionar equipo...</option>
+                                    {% for equipo in equipos %}
+                                    <option value="{{ equipo.id }}">{{ equipo.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <small>⚠️ Asegúrate que los equipos pertenezcan al torneo seleccionado.</small>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Agendar Partido</button>
+                            <a href="{% url 'calendario' %}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

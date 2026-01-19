@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Inscribir Equipo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">👥 Inscribir Nuevo Equipo</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Información del Equipo</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Torneo*</label>
+                            {{ form.torneo }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del Equipo*</label>
+                            {{ form.nombre }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Capitán*</label>
+                            {{ form.capitan }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5>Contacto</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono*</label>
+                            {{ form.telefono }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email*</label>
+                            {{ form.email }}
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h5>Jugadores (mínimo 5, máximo 6)</h5>
+                <div class="row">
+                    {% for i in "123456" %}
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Jugador {{ i }}{% if i == "6" %} (opcional){% endif %}</label>
+                        <input type="text" name="jugador{{ i }}" class="form-control" 
+                               {% if i != "6" %}required{% endif %}>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Guardar Equipo</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    input, select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}

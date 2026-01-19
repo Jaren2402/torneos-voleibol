@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Equipos{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">👥 Gestión de Equipos</h1>
+    
+    <!-- Tarjetas de estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Equipos</h5>
+                    <h2>{{ total_equipos }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pagos Confirmados</h5>
+                    <h2>{{ pagados }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Pagos Pendientes</h5>
+                    <h2>{{ pendientes }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Filtrar por Torneo</label>
+                    <select name="torneo" class="form-select" onchange="this.form.submit()">
+                        <option value="">Todos los torneos</option>
+                        {% for torneo in torneos %}
+                        <option value="{{ torneo.id }}" {% if torneo.id|stringformat:"s" == torneo_seleccionado %}selected{% endif %}>
+                            {{ torneo.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Filtrar por Pago</label>
+                    <select name="pago" class="form-select" onchange="this.form.submit()">
+                        <option value="">Todos</option>
+                        <option value="pagado" {% if pago_seleccionado == 'pagado' %}selected{% endif %}>Pagados</option>
+                        <option value="pendiente" {% if pago_seleccionado == 'pendiente' %}selected{% endif %}>Pendientes</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <a href="{% url 'lista_equipos' %}" class="btn btn-secondary w-100">Limpiar Filtros</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Tabla de equipos -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Lista de Equipos</h5>
+            <a href="{% url 'inscribir_equipo' %}" class="btn btn-primary btn-sm">➕ Nuevo Equipo</a>
+        </div>
+        <div class="card-body">
+            {% if equipos %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Equipo</th>
+                            <th>Torneo</th>
+                            <th>Capitán</th>
+                            <th>Teléfono</th>
+                            <th>Jugadores</th>
+                            <th>Pago</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipo in equipos %}
+                        <tr>
+                            <td><strong>{{ equipo.nombre }}</strong></td>
+                            <td>{{ equipo.torneo.nombre }}</td>
+                            <td>{{ equipo.capitan }}</td>
+                            <td>{{ equipo.telefono }}</td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ equipo.jugador_set.count }} jugadores
+                                </span>
+                            </td>
+                            <td>
+                                {% if equipo.pago_confirmado %}
+                                <span class="badge bg-success">✅ Pagado</span>
+                                {% else %}
+                                <span class="badge bg-danger">❌ Pendiente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'marcar_pago' equipo.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    {% if equipo.pago_confirmado %}
+                                    <button type="submit" class="btn btn-warning btn-sm">Marcar como Pendiente</button>
+                                    {% else %}
+                                    <button type="submit" class="btn btn-success btn-sm">✅ Marcar como Pagado</button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <h4 class="text-muted">No hay equipos registrados</h4>
+                <p class="text-muted">Comienza inscribiendo un equipo</p>
+                <a href="{% url 'inscribir_equipo' %}" class="btn btn-primary">Inscribir Primer Equipo</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Confirmación al marcar pago
+document.querySelectorAll('form[action*="marcar_pago"]').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        if (!confirm('¿Cambiar estado de pago de este equipo?')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}
