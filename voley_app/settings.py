@@ -128,7 +128,7 @@ import os
 # Configuración para PythonAnywhere (Jaren24)
 if 'PYTHONANYWHERE_DOMAIN' in os.environ:
     DEBUG = False
-    ALLOWED_HOSTS = ['Jaren24.pythonanywhere.com']
+    ALLOWED_HOSTS = ['VoleibolApp.pythonanywhere.com']
     print("✅ Ejecutando en PythonAnywhere")
 else:
     DEBUG = True
