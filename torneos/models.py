@@ -8,7 +8,6 @@ class Categoria(models.Model):
         return self.nombre
 
 class Torneo(models.Model):
-    """Un torneo específico"""
     nombre = models.CharField(max_length=100)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     fecha_inicio = models.DateField()
@@ -37,6 +36,63 @@ class Torneo(models.Model):
         blank=True,
         related_name='torneos_ganados'
     )
+    
+    # MÉTODO AQUÍ (4 espacios de indentación)
+    def generar_llave(self):
+        if self.llave_generada:
+            return
+        
+        # Configuración directa
+        config = {
+            4: {'semifinales': 2, 'final': 1},
+            8: {'cuartos': 4, 'semifinales': 2, 'final': 1},
+            16: {'octavos': 8, 'cuartos': 4, 'semifinales': 2, 'final': 1}
+        }
+        
+        if self.num_equipos not in config:
+            raise ValueError("Número de equipos no válido")
+        
+        for ronda, cantidad in config[self.num_equipos].items():
+            for i in range(cantidad):
+                self.partido_set.create(
+                    ronda=ronda,
+                    fecha=None,
+                    hora=None,
+                    equipo_local=None,
+                    equipo_visitante=None,
+                    terminado=False
+                )
+        
+        self.llave_generada = True
+        self.estado = 'en_curso'
+        self.save()
+        
+    # NUEVO MÉTODO - 4 espacios desde el margen
+    def asignar_equipos_llave(self):
+        """Asigna equipos inscritos a partidos de primera ronda"""
+        if not self.llave_generada:
+            raise ValueError("Primero genera la llave")
+        
+        equipos = list(self.equipo_set.all())
+        
+        if len(equipos) != self.num_equipos:
+            raise ValueError(f"Necesitas {self.num_equipos} equipos, tienes {len(equipos)}")
+        
+        primera_ronda = {
+            4: 'semifinales',
+            8: 'cuartos',
+            16: 'octavos'
+        }
+        
+        partidos = self.partido_set.filter(ronda=primera_ronda[self.num_equipos]).order_by('id')
+        
+        for i in range(0, len(equipos), 2):
+            if i + 1 < len(equipos):
+                partido = partidos[i // 2]
+                partido.equipo_local = equipos[i]
+                partido.equipo_visitante = equipos[i + 1]
+                partido.save()    
+    
     def __str__(self):
         return f"{self.nombre} ({self.categoria})"
 
@@ -65,10 +121,10 @@ class Jugador(models.Model):
 class Partido(models.Model):
     """Un partido programado"""
     torneo = models.ForeignKey(Torneo, on_delete=models.CASCADE)
-    fecha = models.DateField()
-    hora = models.TimeField()
-    equipo_local = models.ForeignKey(Equipo, related_name='partidos_local', on_delete=models.CASCADE)
-    equipo_visitante = models.ForeignKey(Equipo, related_name='partidos_visitante', on_delete=models.CASCADE)
+    fecha = models.DateField(null=True, blank=True)
+    hora = models.TimeField(null=True, blank=True)
+    equipo_local = models.ForeignKey(Equipo, null=True, blank=True, related_name='partidos_local', on_delete=models.CASCADE)
+    equipo_visitante = models.ForeignKey(Equipo, null=True, blank=True, related_name='partidos_visitante', on_delete=models.CASCADE)
     
     # NUEVOS CAMPOS
     ronda = models.CharField(
