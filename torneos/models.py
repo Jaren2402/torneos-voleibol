@@ -92,6 +92,60 @@ class Torneo(models.Model):
                 partido.equipo_local = equipos[i]
                 partido.equipo_visitante = equipos[i + 1]
                 partido.save()    
+                
+    def avanzar_ganador(self, partido, equipo_ganador):
+        """Mueve un equipo ganador a la siguiente ronda"""
+        if partido.torneo != self:
+            raise ValueError("Partido no pertenece a este torneo")
+        
+        if partido.terminado:
+            raise ValueError("Partido ya terminado")
+        
+        # Marcar ganador en partido actual
+        partido.ganador = equipo_ganador
+        partido.terminado = True
+        partido.save()
+        
+        # Determinar siguiente ronda
+        siguiente_ronda = {
+            'octavos': 'cuartos',
+            'cuartos': 'semifinales', 
+            'semifinales': 'final',
+            'final': 'terminado'
+        }
+        
+        siguiente = siguiente_ronda.get(partido.ronda)
+        
+        if siguiente == 'terminado':
+            # ¡Es la final! Tenemos campeón
+            self.campeon = equipo_ganador
+            self.estado = 'finalizado'
+            self.save()
+            return f"🏆 ¡{equipo_ganador} es el CAMPEÓN!"
+        
+        # Buscar partido vacío en siguiente ronda
+        partidos_siguiente = self.partido_set.filter(
+            ronda=siguiente,
+            equipo_local__isnull=True
+        ).order_by('id').first()
+        
+        if not partidos_siguiente:
+            partidos_siguiente = self.partido_set.filter(
+                ronda=siguiente,
+                equipo_visitante__isnull=True
+            ).order_by('id').first()
+        
+        if partidos_siguiente:
+            # Asignar ganador
+            if partidos_siguiente.equipo_local is None:
+                partidos_siguiente.equipo_local = equipo_ganador
+            else:
+                partidos_siguiente.equipo_visitante = equipo_ganador
+            partidos_siguiente.save()
+            
+            return f"✅ {equipo_ganador} avanza a {siguiente}"
+        
+        return "⚠️ No hay partido disponible en siguiente ronda"            
     
     def __str__(self):
         return f"{self.nombre} ({self.categoria})"
