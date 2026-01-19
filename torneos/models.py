@@ -15,6 +15,28 @@ class Torneo(models.Model):
     fecha_fin = models.DateField()
     precio_inscripcion = models.DecimalField(max_digits=10, decimal_places=2)
     
+    # NUEVOS CAMPOS
+    num_equipos = models.IntegerField(
+        choices=[(4, '4 equipos'), (8, '8 equipos'), (16, '16 equipos')],
+        default=8
+    )
+    llave_generada = models.BooleanField(default=False)
+    estado = models.CharField(
+        max_length=20,
+        choices=[
+            ('planificacion', 'En planificación'),
+            ('en_curso', 'En curso'),
+            ('finalizado', 'Finalizado')
+        ],
+        default='planificacion'
+    )
+    campeon = models.ForeignKey(
+        'Equipo', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='torneos_ganados'
+    )
     def __str__(self):
         return f"{self.nombre} ({self.categoria})"
 
@@ -48,8 +70,41 @@ class Partido(models.Model):
     equipo_local = models.ForeignKey(Equipo, related_name='partidos_local', on_delete=models.CASCADE)
     equipo_visitante = models.ForeignKey(Equipo, related_name='partidos_visitante', on_delete=models.CASCADE)
     
+    # NUEVOS CAMPOS
+    ronda = models.CharField(
+        max_length=20,
+        choices=[
+            ('cuartos', 'Cuartos de final'),
+            ('semifinales', 'Semifinales'),
+            ('final', 'Final'),
+            ('terminado', 'Terminado')
+        ],
+        default='cuartos'
+    )
+    
+    ganador = models.ForeignKey(
+        'Equipo',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='partidos_ganados'
+    )
+    
+    terminado = models.BooleanField(default=False)
+    
+    # Método para marcar ganador
+    def marcar_ganador(self, equipo_ganador):
+        self.ganador = equipo_ganador
+        self.terminado = True
+        self.save()
+        
+        # Aquí después agregaremos la lógica para mover a siguiente ronda
+        return True
+    
     class Meta:
-        ordering = ['fecha', 'hora']  # Ordenar por fecha y hora
+        ordering = ['fecha', 'hora']
     
     def __str__(self):
+        if self.terminado and self.ganador:
+            return f"{self.equipo_local} vs {self.equipo_visitante} - Ganó: {self.ganador}"
         return f"{self.equipo_local} vs {self.equipo_visitante} - {self.fecha}"
