@@ -91,7 +91,32 @@ class Torneo(models.Model):
                 partido = partidos[i // 2]
                 partido.equipo_local = equipos[i]
                 partido.equipo_visitante = equipos[i + 1]
-                partido.save()    
+                partido.save()   
+                
+    def generar_llave_desde_admin(self):
+        """Versión simple para usar desde Admin - Solo genera partidos vacíos"""
+        try:
+            # Verificar que no tenga llave ya
+            if self.llave_generada:
+                return "⚠️ Este torneo ya tiene llave generada"
+            
+            # Generar la llave (método que ya tienes)
+            self.generar_llave()
+            
+            # Contar partidos creados
+            total_partidos = self.partido_set.count()
+            
+            # Mensaje amigable
+            rondas = {
+                4: "2 Semifinales y 1 Final",
+                8: "4 Cuartos, 2 Semifinales y 1 Final", 
+                16: "8 Octavos, 4 Cuartos, 2 Semifinales y 1 Final"
+            }
+            
+            return f"✅ Llave generada: {rondas.get(self.num_equipos, '')}. Total: {total_partidos} partidos creados."
+            
+        except Exception as e:
+            return f"❌ Error: {str(e)}"             
                 
     def avanzar_ganador(self, partido, equipo_ganador):
         """Mueve un equipo ganador a la siguiente ronda"""
