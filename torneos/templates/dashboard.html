@@ -3,25 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Torneos Vóley</title>
+    <title>Dashboard - Torneos de Voleibol</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .navbar-custom { background-color: #2c3e50; }
-        .sidebar { min-height: calc(100vh - 56px); background-color: #34495e; }
-        .stat-card { border-radius: 10px; transition: transform 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); }
+        /* ===== ESTILOS MODERNOS AZUL PROFESIONAL ===== */
+        body { 
+            background: linear-gradient(135deg, #e6f2ff 0%, #cce0ff 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        /* Navbar profesional */
+        .navbar-custom { 
+            background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%) !important; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 12px 0;
+        }
+        
+        /* Sidebar elegante */
+        .sidebar { 
+            min-height: calc(100vh - 68px); 
+            background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.05);
+            border-right: none;
+        }
+        
+        /* Contenido principal con card moderna */
+        .main-content {
+            background: white;
+            border-radius: 16px;
+            margin: 24px 24px 24px 0;
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            min-height: calc(100vh - 140px);
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* Tarjetas de estadísticas - Diseño moderno */
+        .stat-card, .card {
+            border-radius: 12px !important;
+            border: none;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            border: 1px solid #edf2f7;
+        }
+        
+        .stat-card:hover { 
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Versión completamente limpia - sin bordes visibles */
+        .stat-card, .card {
+            border-top: none !important;
+        }
+
+        /* Solo sombra en hover para indicar interacción */
+        .stat-card:hover, .card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Botones primarios */
+        .btn-login { 
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); 
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-login:hover {
+            background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+            color: white;
+        }
+        
+        /* Botones outline */
+        .btn-outline-dark {
+            border: 2px solid #e2e8f0;
+            color: #4a5568;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 10px 24px;
+            transition: all 0.2s;
+        }
+        
+        .btn-outline-dark:hover {
+            border-color: #4299e1;
+            color: #4299e1;
+            background-color: #f7fafc;
+        }
+        
+        /* List group items - Sidebar */
+        .list-group-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #cbd5e0;
+            margin-bottom: 6px;
+            border-radius: 8px !important;
+            transition: all 0.2s;
+            padding: 12px 16px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        
+        .list-group-item:hover, .list-group-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 3px solid #4299e1;
+            transform: translateX(3px);
+        }
+        
+        /* Tablas elegantes */
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .table thead {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+        }
+        
+        .table th {
+            border: none;
+            font-weight: 600;
+            padding: 16px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #e2e8f0;
+        }
+        
+        .table td {
+            padding: 14px 16px;
+            vertical-align: middle;
+            border-top: 1px solid #edf2f7;
+            color: #4a5568;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: #f7fafc;
+        }
+        
+        /* Badges modernos */
+        .badge {
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+        
+        .bg-primary { background-color: #4299e1 !important; }
+        .bg-secondary { background-color: #718096 !important; }
+        .bg-info { background-color: #0bc5ea !important; }
+        .bg-dark { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%) !important; }
+        
+        /* Títulos y textos */
+        h1, h2, h3, h4, h5, h6 {
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header h5 {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        
+        /* Colores de texto */
+        .text-muted { color: #a0aec0 !important; }
+        .text-dark { color: #2d3748 !important; }
+        
+        /* Alerta de éxito */
+        .text-success { color: #48bb78 !important; }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 15px;
+                padding: 20px;
+            }
+            
+            .sidebar {
+                min-height: auto;
+                margin-bottom: 20px;
+            }
+            
+            .stat-card {
+                margin-bottom: 15px;
+            }
+        }
+        
+        
+        
+        /* Animación sutil para elementos */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stat-card {
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        /* Iconos más grandes en el sidebar */
+        .list-group-item::before {
+            font-size: 1.1rem;
+            margin-right: 10px;
+        }
+        /* Asegurar texto blanco en headers oscuros */
+        .card-header.bg-dark h5,
+        .card-header.bg-dark h6 {
+            color: white !important;
+        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-        <div class="container">
-            <a class="navbar-brand" href="/dashboard/">🏐 Gestión de Torneos</a>
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/dashboard/">
+                <span style="font-size: 1.5rem;">🏐</span> Torneos de Voleibol
+            </a>
             {% if user.is_authenticated %}
             <div class="navbar-text text-light">
-                Hola, {{ user.username }} | 
-                <a href="/admin/logout/" class="text-light">Cerrar sesión</a>
+                <span class="d-none d-md-inline">Hola, <strong>{{ user.username }}</strong></span> 
+                <a href="/admin/logout/" class="btn btn-login btn-sm ms-3">Cerrar sesión</a>
             </div>
             {% endif %}
         </div>
@@ -31,107 +257,194 @@
         <div class="row">
             <!-- Sidebar -->
             {% if user.is_authenticated %}
-            <div class="col-md-2 sidebar p-3">
-                <div class="list-group">
-                    <a href="/dashboard/" class="list-group-item list-group-item-action bg-dark text-white">📊 Dashboard</a>
-                    <a href="/admin/torneos/equipo/" class="list-group-item list-group-item-action bg-dark text-white">👥 Equipos</a>
-                    <a href="/admin/torneos/partido/" class="list-group-item list-group-item-action bg-dark text-white">📅 Partidos</a>
-                    <a href="/admin/torneos/torneo/" class="list-group-item list-group-item-action bg-dark text-white">🏆 Torneos</a>
-                    <a href="/admin/" class="list-group-item list-group-item-action bg-dark text-white">⚙️ Admin Completo</a>
+            <div class="col-md-2 sidebar p-4">
+                <div class="list-group border-0">
+                    <a href="/dashboard/" class="list-group-item list-group-item-action {% if request.path == '/dashboard/' %}active{% endif %}">
+                        📊 Dashboard
+                    </a>
+                    <a href="/admin/torneos/equipo/" class="list-group-item list-group-item-action">
+                        👥 Equipos
+                    </a>
+                    <a href="/admin/torneos/partido/" class="list-group-item list-group-item-action">
+                        📅 Partidos
+                    </a>
+                    <a href="/admin/torneos/torneo/" class="list-group-item list-group-item-action">
+                        🏆 Torneos
+                    </a>
+                    <a href="/admin/" class="list-group-item list-group-item-action mt-4">
+                        ⚙️ Admin Completo
+                    </a>
                 </div>
+                
             </div>
             {% endif %}
 
             <!-- Contenido principal -->
-            <div class="{% if user.is_authenticated %}col-md-10{% else %}col-12{% endif %} p-4">
-                <h1 class="mb-4">🏐 Dashboard de Torneos</h1>
-                
-                <!-- Tarjetas de estadísticas -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card stat-card bg-primary text-white">
-                            <div class="card-body">
-                                <h5 class="card-title">Total Equipos</h5>
-                                <h2>{{ total_equipos }}</h2>
+            <div class="{% if user.is_authenticated %}col-md-10{% else %}col-12{% endif %}">
+                <div class="main-content">
+                    <h1 class="mb-4">🏐 Dashboard de Torneos</h1>
+                    
+                    <!-- Tarjetas de estadísticas -->
+                    <div class="row mb-5">
+                        <div class="col-md-3 mb-4">
+                            <div class="card stat-card text-white" style="background: #4F46E5;">  <!-- Índigo - Neutral y profesional -->
+                                <div class="card-body text-center">
+                                    <h5 class="card-title mb-3">Total Equipos</h5>
+                                    <h2 class="display-4 fw-bold">{{ total_equipos }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card stat-card text-white" style="background: #10B981;">  <!-- Verde esmeralda - Éxito, confirmado -->
+                                <div class="card-body text-center">
+                                    <h5 class="card-title mb-3">Pagos Confirmados</h5>
+                                    <h2 class="display-4 fw-bold">{{ equipos_pagados }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card stat-card text-white" style="background: #EF4444;">  <!-- Rojo naranja - Alerta, pendiente -->
+                                <div class="card-body text-center">
+                                    <h5 class="card-title mb-3">Pagos Pendientes</h5>
+                                    <h2 class="display-4 fw-bold">{{ equipos_pendientes }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card stat-card text-white" style="background: #3B82F6;">  <!-- Azul brillante - Actividad, programación -->
+                                <div class="card-body text-center">
+                                    <h5 class="card-title mb-3">Partidos Programados</h5>
+                                    <h2 class="display-4 fw-bold">{{ total_partidos }}</h2>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card bg-success text-white">
-                            <div class="card-body">
-                                <h5 class="card-title">Pagos Confirmados</h5>
-                                <h2>{{ equipos_pagados }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card bg-warning text-white">
-                            <div class="card-body">
-                                <h5 class="card-title">Pagos Pendientes</h5>
-                                <h2>{{ equipos_pendientes }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card bg-info text-white">
-                            <div class="card-body">
-                                <h5 class="card-title">Partidos Programados</h5>
-                                <h2>{{ total_partidos }}</h2>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Tabla de equipos con pagos pendientes -->
-                <div class="card">
-                    <div class="card-header"><h5>📋 Equipos por Confirmar Pago</h5></div>
-                    <div class="card-body">
-                        {% if equipos_pendientes_list %}
-                        <table class="table table-hover">
-                            <thead>
-                                <tr><th>Equipo</th><th>Capitán</th><th>Torneo</th><th>Teléfono</th><th>Acciones</th></tr>
-                            </thead>
-                            <tbody>
-                                {% for equipo in equipos_pendientes_list %}
-                                <tr>
-                                    <td>{{ equipo.nombre }}</td>
-                                    <td>{{ equipo.capitan }}</td>
-                                    <td>{{ equipo.torneo.nombre }}</td>
-                                    <td>{{ equipo.telefono }}</td>
-                                    <td><a href="/admin/torneos/equipo/{{ equipo.id }}/change/" class="btn btn-sm btn-success">Marcar Pagado</a></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        {% else %}
-                        <p class="text-center text-muted">🎉 ¡Todos los equipos han pagado!</p>
-                        {% endif %}
+                    <!-- Tabla de equipos con pagos pendientes -->
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">📋 Equipos por Confirmar Pago</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if equipos_pendientes_list %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Equipo</th>
+                                            <th>Capitán</th>
+                                            <th>Torneo</th>
+                                            <th>Teléfono</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for equipo in equipos_pendientes_list %}
+                                        <tr>
+                                            <td><strong>{{ equipo.nombre }}</strong></td>
+                                            <td>{{ equipo.capitan }}</td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ equipo.torneo.nombre }}</span>
+                                            </td>
+                                            <td>{{ equipo.telefono }}</td>
+                                            <td>
+                                                <a href="/admin/torneos/equipo/{{ equipo.id }}/change/" 
+                                                   class="btn btn-login btn-sm">
+                                                   ✅ Marcar Pagado
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5">
+                                <div class="text-success mb-3" style="font-size: 3rem;">🎉</div>
+                                <h5 class="text-muted">¡Todos los equipos han pagado!</h5>
+                                <p class="text-muted small">No hay pagos pendientes por confirmar.</p>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
 
-                <!-- Próximos partidos -->
-                <div class="card mt-4">
-                    <div class="card-header"><h5>📅 Próximos Partidos</h5></div>
-                    <div class="card-body">
-                        {% if proximos_partidos %}
-                        <table class="table">
-                            <thead>
-                                <tr><th>Fecha</th><th>Hora</th><th>Partido</th><th>Torneo</th></tr>
-                            </thead>
-                            <tbody>
-                                {% for partido in proximos_partidos %}
-                                <tr>
-                                    <td>{{ partido.fecha }}</td>
-                                    <td>{{ partido.hora }}</td>
-                                    <td>{{ partido.equipo_local }} vs {{ partido.equipo_visitante }}</td>
-                                    <td>{{ partido.torneo.nombre }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        {% else %}
-                        <p class="text-center text-muted">No hay partidos programados.</p>
-                        {% endif %}
+                    <!-- Próximos partidos -->
+                    <div class="card mt-4">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">📅 Próximos Partidos</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if proximos_partidos %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Hora</th>
+                                            <th>Partido</th>
+                                            <th>Torneo</th>
+                                            <th>Ronda</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for partido in proximos_partidos %}
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-info">{{ partido.fecha|default:"Sin fecha" }}</span>
+                                            </td>
+                                            <td>{{ partido.hora|default:"--:--" }}</td>
+                                            <td>
+                                                <strong>{{ partido.equipo_local|default:"Por definir" }}</strong> 
+                                                vs 
+                                                <strong>{{ partido.equipo_visitante|default:"Por definir" }}</strong>
+                                            </td>
+                                            <td>{{ partido.torneo.nombre }}</td>
+                                            <td>
+                                                <span class="badge bg-secondary">{{ partido.get_ronda_display|default:"Por definir" }}</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5">
+                                <p class="text-muted h5">No hay partidos programados.</p>
+                                <p class="text-muted small">Los partidos aparecerán aquí cuando sean creados.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Acciones rápidas -->
+                    <div class="card mt-4">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">⚡ Acciones Rápidas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3 mb-3">
+                                    <a href="/admin/torneos/torneo/add/" class="btn btn-login w-100">
+                                        🏆 Crear Torneo
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="/admin/torneos/equipo/add/" class="btn btn-login w-100">
+                                        👥 Registrar Equipo
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="/admin/torneos/partido/" class="btn btn-login w-100">
+                                        📅 Ver Partidos
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="/admin/" class="btn btn-outline-dark w-100">
+                                        ⚙️ Panel Admin
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,5 +453,22 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Efectos adicionales
+        document.addEventListener('DOMContentLoaded', function() {
+            // Efecto de aparición suave para las tarjetas
+            const cards = document.querySelectorAll('.stat-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s, transform 0.5s';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        });
+    </script>
 </body>
 </html>
