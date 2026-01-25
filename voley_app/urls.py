@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.views.generic import RedirectView
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from torneos.views import dashboard, inscribir_equipo, lista_equipos, marcar_pago, calendario, agregar_partido, lista_torneos
+from torneos.views import dashboard, inscribir_equipo, lista_equipos, marcar_pago, calendario, agregar_partido, lista_torneos, historial_torneos
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # Lo dejamos pero no lo usaremos
@@ -16,4 +16,5 @@ urlpatterns = [
     path('calendario/', calendario, name='calendario'),
     path('calendario/nuevo/', agregar_partido, name='agregar_partido'),
     path('torneos/', lista_torneos, name='lista_torneos'),
+    path('historial/', historial_torneos, name='historial'),
 ]

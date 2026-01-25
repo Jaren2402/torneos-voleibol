@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial - Torneos de Voleibol</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* ===== COPIA EXACTA DE LOS ESTILOS DE TU DASHBOARD ===== */
+        body { 
+            background: linear-gradient(135deg, #e6f2ff 0%, #cce0ff 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        .navbar-custom { 
+            background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%) !important; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 12px 0;
+        }
+        
+        .sidebar { 
+            min-height: calc(100vh - 68px); 
+            background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.05);
+            border-right: none;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 16px;
+            margin: 24px 24px 24px 0;
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            min-height: calc(100vh - 140px);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .historial-card {
+            border-radius: 12px !important;
+            border: none;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            border: 1px solid #edf2f7;
+            margin-bottom: 24px;
+        }
+        
+        .historial-card:hover { 
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-ver-detalles { 
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); 
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-ver-detalles:hover {
+            background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+            color: white;
+        }
+        
+        .list-group-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #cbd5e0;
+            margin-bottom: 6px;
+            border-radius: 8px !important;
+            transition: all 0.2s;
+            padding: 12px 16px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        
+        .list-group-item:hover, .list-group-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 3px solid #4299e1;
+            transform: translateX(3px);
+        }
+        
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .badge-campeon {
+            background: linear-gradient(135deg, #f6e05e 0%, #d69e2e 100%);
+            color: #744210;
+            font-weight: 600;
+        }
+        
+        .badge-subcampeon {
+            background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
+            color: #4a5568;
+            font-weight: 600;
+        }
+        
+        .jugador-item {
+            padding: 6px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+        
+        .jugador-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 15px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar IDÉNTICO a tu dashboard -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/dashboard/">
+                <span style="font-size: 1.5rem;">🏐</span> Torneos de Voleibol
+            </a>
+            {% if user.is_authenticated %}
+            <div class="navbar-text text-light">
+                <span class="d-none d-md-inline">Hola, <strong>{{ user.username }}</strong></span> 
+                <a href="/admin/logout/" class="btn btn-login btn-sm ms-3">Cerrar sesión</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar IDÉNTICO a tu dashboard -->
+            {% if user.is_authenticated %}
+            <div class="col-md-2 sidebar p-4">
+                <div class="list-group border-0">
+                    <a href="/dashboard/" class="list-group-item list-group-item-action {% if request.path == '/dashboard/' %}active{% endif %}">
+                        📊 Dashboard
+                    </a>
+                    <a href="/admin/torneos/equipo/" class="list-group-item list-group-item-action">
+                        👥 Equipos
+                    </a>
+                    <a href="/admin/torneos/partido/" class="list-group-item list-group-item-action">
+                        📅 Partidos
+                    </a>
+                    <a href="/admin/torneos/torneo/" class="list-group-item list-group-item-action">
+                        🏆 Torneos
+                    </a>
+                    <a href="{% url 'historial' %}" class="list-group-item list-group-item-action active">
+                        📜 Historial
+                    </a>
+                    <a href="/admin/" class="list-group-item list-group-item-action mt-4">
+                        ⚙️ Admin Completo
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Contenido principal del historial -->
+            <div class="{% if user.is_authenticated %}col-md-10{% else %}col-12{% endif %}">
+                <div class="main-content">
+                    <h1 class="mb-4">📜 Historial de Torneos</h1>
+                    
+                    {% if torneos %}
+                    <div class="alert alert-info d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ total_torneos }}</strong> torneos finalizados encontrados
+                            <span class="text-muted ms-3">Ordenados del más reciente</span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-dark" onclick="window.scrollTo(0,0)">
+                            ↑ Subir
+                        </button>
+                    </div>
+                    
+                    <!-- LISTA DE TORNEOS CON SCROLL -->
+                    <div style="max-height: 75vh; overflow-y: auto; padding-right: 10px;">
+                        {% for datos in torneos %}
+                        {% with torneo=datos.torneo %}
+                        <div class="historial-card">
+                            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="mb-0">🏆 {{ torneo.nombre }}</h4>
+                                    <small class="opacity-75">
+                                        {{ torneo.categoria }} • 
+                                        Finalizado: {{ torneo.fecha_fin|date:"d M Y" }}
+                                    </small>
+                                </div>
+                                <span class="badge bg-light text-dark fs-6">
+                                    {{ torneo.num_equipos }} equipos
+                                </span>
+                            </div>
+                            
+                            <div class="card-body">
+                                <!-- CAMPEÓN Y SUBCAMPEÓN -->
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="border rounded p-3 bg-warning bg-opacity-10">
+                                            <h5 class="text-warning">🥇 CAMPEÓN</h5>
+                                            <h3 class="mb-2">{{ torneo.campeon.nombre|default:"No asignado" }}</h3>
+                                            {% if torneo.campeon %}
+                                            <div class="mt-2">
+                                                <small class="text-muted">Jugadores destacados:</small>
+                                                <div class="mt-1">
+                                                    {% for jugador in torneo.campeon.jugador_set.all|slice:":3" %}
+                                                    <span class="badge bg-warning me-1">{{ jugador.nombre }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        {% if datos.subcampeon %}
+                                        <div class="border rounded p-3">
+                                            <h5 class="text-secondary">🥈 SUBCAMPEÓN</h5>
+                                            <h4 class="mb-2">{{ datos.subcampeon.nombre }}</h4>
+                                            <div class="mt-2">
+                                                <small class="text-muted">Jugadores destacados:</small>
+                                                <div class="mt-1">
+                                                    {% for jugador in datos.subcampeon.jugador_set.all|slice:":3" %}
+                                                    <span class="badge bg-secondary me-1">{{ jugador.nombre }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- ESTADÍSTICAS -->
+                                <div class="row mb-4">
+                                    <div class="col-md-3">
+                                        <div class="card text-center border-0">
+                                            <div class="card-body">
+                                                <h6 class="text-muted">Equipos</h6>
+                                                <h3 class="mb-0">{{ datos.total_equipos }}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center border-0">
+                                            <div class="card-body">
+                                                <h6 class="text-muted">Partidos</h6>
+                                                <h3 class="mb-0">{{ datos.total_partidos }}</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center border-0">
+                                            <div class="card-body">
+                                                <h6 class="text-muted">Inscripción</h6>
+                                                <h4 class="mb-0">${{ torneo.precio_inscripcion }}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card text-center border-0">
+                                            <div class="card-body">
+                                                <h6 class="text-muted">Duración</h6>
+                                                <h5 class="mb-0">
+                                                    {{ torneo.fecha_inicio|date:"d/m" }}-{{ torneo.fecha_fin|date:"d/m" }}
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- BOTÓN PARA VER DETALLES COMPLETOS -->
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-ver-detalles" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            data-bs-target="#detalles-{{ torneo.id }}"
+                                            aria-expanded="false">
+                                        👁️ Ver detalles completos
+                                    </button>
+                                </div>
+                                
+                                <!-- DETALLES EXPANDIBLES -->
+                                <div class="collapse mt-4" id="detalles-{{ torneo.id }}">
+                                    <div class="border rounded p-4">
+                                        <!-- EQUIPOS Y JUGADORES -->
+                                        <h5 class="mb-3">👥 Equipos Participantes</h5>
+                                        <div class="row">
+                                            {% for equipo_data in datos.equipos_con_jugadores %}
+                                            <div class="col-md-6 mb-3">
+                                                <div class="border rounded p-3 {% if equipo_data.equipo.id == torneo.campeon.id %}border-warning border-2{% endif %}">
+                                                    <h6 class="mb-2">
+                                                        {{ equipo_data.equipo.nombre }}
+                                                        {% if equipo_data.equipo.id == torneo.campeon.id %}
+                                                        <span class="badge badge-campeon ms-2">CAMPEÓN</span>
+                                                        {% elif equipo_data.equipo.id == datos.subcampeon.id %}
+                                                        <span class="badge badge-subcampeon ms-2">SUBCAMPEÓN</span>
+                                                        {% endif %}
+                                                    </h6>
+                                                    
+                                                    <div class="mt-2">
+                                                        <small class="text-muted">Jugadores ({{ equipo_data.total_jugadores }}):</small>
+                                                        <div class="mt-1">
+                                                            {% for jugador in equipo_data.jugadores %}
+                                                            <div class="jugador-item d-flex justify-content-between">
+                                                                <span>{{ jugador.nombre }}</span>
+                                                                {% if jugador.capitan %}
+                                                                <span class="badge bg-info">Capitán</span>
+                                                                {% endif %}
+                                                            </div>
+                                                            {% endfor %}
+                                                            
+                                                            {% if equipo_data.total_jugadores > 5 %}
+                                                            <div class="text-center mt-2">
+                                                                <small class="text-muted">
+                                                                    +{{ equipo_data.total_jugadores|add:"-5" }} jugadores más...
+                                                                </small>
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        
+                                        <!-- PARTIDOS IMPORTANTES -->
+                                        {% if datos.partidos_finales %}
+                                        <h5 class="mt-4 mb-3">🏐 Partidos Clave</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Ronda</th>
+                                                        <th>Equipos</th>
+                                                        <th>Resultado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for partido in datos.partidos_finales %}
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-secondary">
+                                                                {{ partido.get_ronda_display }}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            {{ partido.equipo_local|default:"Por definir" }} vs 
+                                                            {{ partido.equipo_visitante|default:"Por definir" }}
+                                                        </td>
+                                                        <td>
+                                                            {% if partido.terminado and partido.ganador %}
+                                                            <span class="badge bg-success">
+                                                                Ganó: {{ partido.ganador.nombre }}
+                                                            </span>
+                                                            {% else %}
+                                                            <span class="text-muted">No jugado</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <!-- BOTÓN PARA IR AL ADMIN -->
+                                        <div class="text-center mt-4">
+                                            <a href="/admin/torneos/torneo/{{ torneo.id }}/change/" 
+                                               class="btn btn-outline-dark" 
+                                               target="_blank">
+                                                ⚙️ Ver en Panel de Administración
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endwith %}
+                        {% endfor %}
+                    </div>
+                    
+                    {% else %}
+                    <!-- SIN TORNEOS -->
+                    <div class="alert alert-warning text-center py-5">
+                        <div class="display-1 mb-3">📭</div>
+                        <h3 class="mb-3">No hay torneos finalizados aún</h3>
+                        <p class="text-muted mb-4">
+                            Cuando finalices un torneo  
+                            aparecerá automáticamente aquí en el historial.
+                        </p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="/admin/torneos/torneo/" class="btn btn-ver-detalles">
+                                🏆 Gestionar Torneos
+                            </a>
+                            <a href="/dashboard/" class="btn fw-bold" style="background: #4a5568; color: white; border: none; padding: 10px 24px;">
+                                ← Volver al Dashboard
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Scroll suave para los acordeones
+        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const target = document.querySelector(this.getAttribute('data-bs-target'));
+                if (target.classList.contains('show')) {
+                    setTimeout(() => {
+                        this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 300);
+                }
+            });
+        });
+        
+        // Efecto de aparición para tarjetas
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.historial-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s, transform 0.5s';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -203,3 +203,50 @@ def lista_torneos(request):
         'torneos': torneos,
         'categorias': categorias,
     })
+    
+    
+def historial_torneos(request):
+    # Obtener torneos finalizados del más reciente al más antiguo
+    torneos_finalizados = Torneo.objects.filter(
+        estado='finalizado'
+    ).order_by('-fecha_fin')
+    
+    # Pre-cargar datos relacionados para eficiencia
+    torneos_con_datos = torneos_finalizados.select_related(
+        'categoria', 'campeon'
+    ).prefetch_related(
+        'equipo_set__jugador_set',  # Incluye jugadores por equipo
+        'partido_set'
+    )
+    
+    # Preparar datos para el template
+    torneos_procesados = []
+    for torneo in torneos_con_datos:
+        equipos_con_jugadores = []
+        for equipo in torneo.equipo_set.all():
+            equipos_con_jugadores.append({
+                'equipo': equipo,
+                'jugadores': list(equipo.jugador_set.all()[:5]),  # Primeros 5 jugadores
+                'total_jugadores': equipo.jugador_set.count()
+            })
+        
+        torneos_procesados.append({
+            'torneo': torneo,
+            'campeon': torneo.campeon,
+            'subcampeon': torneo.partido_set.filter(
+                ronda='final', terminado=True
+            ).first().perdedor if torneo.partido_set.filter(ronda='final', terminado=True).exists() else None,
+            'equipos_con_jugadores': equipos_con_jugadores,
+            'total_equipos': torneo.equipo_set.count(),
+            'total_partidos': torneo.partido_set.filter(terminado=True).count(),
+            'partidos_finales': list(torneo.partido_set.filter(
+                ronda__in=['final', 'semifinales']
+            ).order_by('ronda')[:3]),
+        })
+    
+    context = {
+        'torneos': torneos_procesados,
+        'total_torneos': torneos_finalizados.count(),
+        'titulo': 'Historial de Torneos Finalizados',
+    }
+    return render(request, 'torneos/historial.html', context)
