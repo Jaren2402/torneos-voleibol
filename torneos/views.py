@@ -215,27 +215,35 @@ def historial_torneos(request):
     torneos_con_datos = torneos_finalizados.select_related(
         'categoria', 'campeon'
     ).prefetch_related(
-        'equipo_set__jugador_set',  # Incluye jugadores por equipo
+        'equipo_set__jugador_set',
         'partido_set'
     )
     
     # Preparar datos para el template
     torneos_procesados = []
     for torneo in torneos_con_datos:
+        # Obtener subcampeón (perdedor de la final)
+        subcampeon = None
+        partido_final = torneo.partido_set.filter(ronda='final', terminado=True).first()
+        if partido_final and partido_final.ganador:
+            # Determinar qué equipo NO es el ganador
+            if partido_final.equipo_local == partido_final.ganador:
+                subcampeon = partido_final.equipo_visitante
+            else:
+                subcampeon = partido_final.equipo_local
+        
         equipos_con_jugadores = []
         for equipo in torneo.equipo_set.all():
             equipos_con_jugadores.append({
                 'equipo': equipo,
-                'jugadores': list(equipo.jugador_set.all()[:5]),  # Primeros 5 jugadores
+                'jugadores': list(equipo.jugador_set.all()[:5]),
                 'total_jugadores': equipo.jugador_set.count()
             })
         
         torneos_procesados.append({
             'torneo': torneo,
             'campeon': torneo.campeon,
-            'subcampeon': torneo.partido_set.filter(
-                ronda='final', terminado=True
-            ).first().perdedor if torneo.partido_set.filter(ronda='final', terminado=True).exists() else None,
+            'subcampeon': subcampeon,
             'equipos_con_jugadores': equipos_con_jugadores,
             'total_equipos': torneo.equipo_set.count(),
             'total_partidos': torneo.partido_set.filter(terminado=True).count(),
