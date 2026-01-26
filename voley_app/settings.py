@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -134,3 +136,12 @@ else:
     DEBUG = True
     ALLOWED_HOSTS = []
     print("✅ Ejecutando localmente")
+    
+ADMIN_INTERFACE_CONFIG = {
+    # ... otras configuraciones si las tienes ...
+    
+    # Deshabilitar acciones recientes
+    'SHOW_RECENT_ACTIONS': False,
+    
+
+}

@@ -1,0 +1,87 @@
+/* ===== AZULES DE TU DASHBOARD ===== */
+:root {
+    --azul-oscuro: #2c5282;
+    --azul-medio: #4299e1;
+    --azul-claro: #ebf8ff;
+    --gris-fondo: #f7fafc;
+    --gris-borde: #e2e8f0;
+    --gris-texto: #4a5568;
+}
+
+/* ===== FONDO GENERAL ===== */
+body {
+    background: var(--gris-fondo) !important;
+    font-family: 'Segoe UI', system-ui, sans-serif !important;
+}
+
+/* ===== SIDEBAR (AZUL OSCURO) ===== */
+[data-sidebar] {
+    background: linear-gradient(180deg, var(--azul-oscuro) 0%, #1a365d 100%) !important;
+    border-right: none !important;
+}
+
+/* Texto sidebar blanco */
+[data-sidebar] * {
+    color: white !important;
+}
+
+/* ===== BOTONES (AZUL BRILLANTE) ===== */
+button[type="submit"], 
+button.bg-primary,
+a.bg-primary {
+    background: linear-gradient(135deg, var(--azul-medio) 0%, #3182ce 100%) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3) !important;
+}
+
+/* ===== TARJETAS/CONTENEDORES ===== */
+.bg-card,
+.bg-white {
+    border-radius: 12px !important;
+    border: 1px solid var(--gris-borde) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ===== TABLAS ===== */
+table {
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    border: 1px solid var(--gris-borde) !important;
+}
+
+thead {
+    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+    color: white !important;
+}
+
+th {
+    font-weight: 600 !important;
+    padding: 16px !important;
+}
+
+/* ===== FORMULARIOS ===== */
+input, select, textarea {
+    border-radius: 8px !important;
+    border: 1px solid var(--gris-borde) !important;
+    padding: 10px 14px !important;
+}
+
+input:focus {
+    border-color: var(--azul-medio) !important;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1) !important;
+}
+
+/* ===== HEADER ===== */
+[data-header] {
+    background: white !important;
+    border-bottom: 1px solid var(--gris-borde) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}

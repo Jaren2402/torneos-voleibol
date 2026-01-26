@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        /* 1. ENCABEZADO AZUL */
+        #header {
+            background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%) !important;
+            height: 60px !important;
+        }
+        
+        #branding h1 {
+            color: white !important;
+            font-weight: 600 !important;
+        }
+        
+        /* 2. BOTONES AZULES */
+        .button, input[type=submit], input[type=button] {
+            background: #4299e1 !important;
+            border-radius: 8px !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s !important;
+        }
+        
+        .button:hover, input[type=submit]:hover {
+            background: #3182ce !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        /* 3. TARJETAS SUAVES */
+        .module {
+            border-radius: 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+            overflow: hidden !important;
+        }
+        
+        .module h2, .module caption {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+            color: white !important;
+            padding: 15px !important;
+            font-weight: 500 !important;
+        }
+        
+        /* 4. FONDO CLARO */
+        body {
+            background: #f7fafc !important;
+        }
+    </style>
+{% endblock %}
