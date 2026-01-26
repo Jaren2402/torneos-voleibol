@@ -97,7 +97,7 @@
         }
         
         .badge-campeon {
-            background: linear-gradient(135deg, #f6e05e 0%, #d69e2e 100%);
+            background: linear-gradient(135deg, #98caed 0%, #a0aec0 100%);
             color: #744210;
             font-weight: 600;
         }
@@ -191,7 +191,7 @@
                     <div style="max-height: 75vh; overflow-y: auto; padding-right: 10px;">
                         {% for datos in torneos %}
                         {% with torneo=datos.torneo %}
-                        <div class="historial-card">
+                        <div class="historial-card" style="border-left: 5px solid #4299e1; background: white; margin-bottom: 20px;"></div>
                             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                                 <div>
                                     <h4 class="mb-0">🏆 {{ torneo.nombre }}</h4>
@@ -205,186 +205,108 @@
                                 </span>
                             </div>
                             
-                            <div class="card-body">
-                                <!-- CAMPEÓN Y SUBCAMPEÓN -->
-                                <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <div class="border rounded p-3 bg-warning bg-opacity-10">
-                                            <h5 class="text-warning">🥇 CAMPEÓN</h5>
-                                            <h3 class="mb-2">{{ torneo.campeon.nombre|default:"No asignado" }}</h3>
-                                            {% if torneo.campeon %}
-                                            <div class="mt-2">
-                                                <small class="text-muted">Jugadores destacados:</small>
-                                                <div class="mt-1">
-                                                    {% for jugador in torneo.campeon.jugador_set.all|slice:":3" %}
-                                                    <span class="badge bg-warning me-1">{{ jugador.nombre }}</span>
-                                                    {% endfor %}
+                            <div class="card-body" style="padding: 25px;">
+                                <!-- INFORMACIÓN BÁSICA (siempre visible) -->
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h4 class="mb-2">{{ torneo.nombre }}</h4>
+                                        <p class="text-muted mb-1">
+                                            📅 {{ torneo.fecha_inicio|date:"d/m/Y" }} - {{ torneo.fecha_fin|date:"d/m/Y" }}
+                                            • 👥 {{ datos.total_equipos }} equipos
+                                            • 🏐 {{ datos.total_partidos }} partidos
+                                        </p>
+                                        
+                                        <!-- CAMPEÓN -->
+                                        <div class="mt-3">
+                                            <h5 class="text-success">🏆 Campeón: {{ torneo.campeon.nombre|default:"No asignado" }}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <!-- BOTÓN EXPANDIR -->
+                                        <button class="btn btn-outline-primary" 
+                                                type="button" 
+                                                data-bs-toggle="collapse" 
+                                                data-bs-target="#detalles-{{ torneo.id }}"
+                                                aria-expanded="false">
+                                            📖 Ver detalles
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- DETALLES EXPANDIBLES (ocultos inicialmente) -->
+                                <div class="collapse mt-4" id="detalles-{{ torneo.id }}">
+                                    <hr>
+                                    
+                                    <!-- SUBCAMPEÓN -->
+                                    {% if datos.subcampeon %}
+                                    <div class="mb-3">
+                                        <h6 class="text-secondary">🥈 Subcampeón: {{ datos.subcampeon.nombre }}</h6>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- EQUIPOS PARTICIPANTES -->
+                                    <h6>👥 Equipos participantes:</h6>
+                                    <div class="row">
+                                        {% for equipo_data in datos.equipos_con_jugadores %}
+                                        <div class="col-md-4 mb-3">
+                                            <div class="border rounded p-3">
+                                                <strong>{{ equipo_data.equipo.nombre }}</strong>
+                                                {% if torneo.campeon and equipo_data.equipo.id == torneo.campeon.id %}
+                                                <span class="badge bg-warning ms-2">Campeón</span>
+                                                {% elif datos.subcampeon and equipo_data.equipo.id == datos.subcampeon.id %}
+                                                <span class="badge bg-secondary ms-2">Subcampeón</span>
+                                                {% endif %}
+                                                
+                                                <!-- JUGADORES (opcional) -->
+                                                <div class="mt-2">
+                                                    <small class="text-muted">Jugadores ({{ equipo_data.total_jugadores }}):</small>
+                                                    <ul class="mb-0">
+                                                        {% for jugador in equipo_data.jugadores|slice:":3" %}
+                                                        <li>{{ jugador.nombre }}</li>
+                                                        {% endfor %}
+                                                        {% if equipo_data.total_jugadores > 3 %}
+                                                        <li><em>+{{ equipo_data.total_jugadores|add:"-3" }} más</em></li>
+                                                        {% endif %}
+                                                    </ul>
                                                 </div>
                                             </div>
-                                            {% endif %}
                                         </div>
+                                        {% endfor %}
                                     </div>
                                     
-                                    <div class="col-md-6">
-                                        {% if datos.subcampeon %}
-                                        <div class="border rounded p-3">
-                                            <h5 class="text-secondary">🥈 SUBCAMPEÓN</h5>
-                                            <h4 class="mb-2">{{ datos.subcampeon.nombre }}</h4>
-                                            <div class="mt-2">
-                                                <small class="text-muted">Jugadores destacados:</small>
-                                                <div class="mt-1">
-                                                    {% for jugador in datos.subcampeon.jugador_set.all|slice:":3" %}
-                                                    <span class="badge bg-secondary me-1">{{ jugador.nombre }}</span>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                
-                                <!-- ESTADÍSTICAS -->
-                                <div class="row mb-4">
-                                    <div class="col-md-3">
-                                        <div class="card text-center border-0">
-                                            <div class="card-body">
-                                                <h6 class="text-muted">Equipos</h6>
-                                                <h3 class="mb-0">{{ datos.total_equipos }}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="card text-center border-0">
-                                            <div class="card-body">
-                                                <h6 class="text-muted">Partidos</h6>
-                                                <h3 class="mb-0">{{ datos.total_partidos }}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="card text-center border-0">
-                                            <div class="card-body">
-                                                <h6 class="text-muted">Inscripción</h6>
-                                                <h4 class="mb-0">${{ torneo.precio_inscripcion }}</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="card text-center border-0">
-                                            <div class="card-body">
-                                                <h6 class="text-muted">Duración</h6>
-                                                <h5 class="mb-0">
-                                                    {{ torneo.fecha_inicio|date:"d/m" }}-{{ torneo.fecha_fin|date:"d/m" }}
-                                                </h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- BOTÓN PARA VER DETALLES COMPLETOS -->
-                                <div class="text-center mt-4">
-                                    <button class="btn btn-ver-detalles" 
-                                            type="button" 
-                                            data-bs-toggle="collapse" 
-                                            data-bs-target="#detalles-{{ torneo.id }}"
-                                            aria-expanded="false">
-                                        👁️ Ver detalles completos
-                                    </button>
-                                </div>
-                                
-                                <!-- DETALLES EXPANDIBLES -->
-                                <div class="collapse mt-4" id="detalles-{{ torneo.id }}">
-                                    <div class="border rounded p-4">
-                                        <!-- EQUIPOS Y JUGADORES -->
-                                        <h5 class="mb-3">👥 Equipos Participantes</h5>
-                                        <div class="row">
-                                            {% for equipo_data in datos.equipos_con_jugadores %}
-                                            <div class="col-md-6 mb-3">
-                                                <div class="border rounded p-3 {% if equipo_data.equipo.id == torneo.campeon.id %}border-warning border-2{% endif %}">
-                                                    <h6 class="mb-2">
-                                                        {{ equipo_data.equipo.nombre }}
-                                                        {% if equipo_data.equipo.id == torneo.campeon.id %}
-                                                        <span class="badge badge-campeon ms-2">CAMPEÓN</span>
-                                                        {% elif equipo_data.equipo.id == datos.subcampeon.id %}
-                                                        <span class="badge badge-subcampeon ms-2">SUBCAMPEÓN</span>
+                                    <!-- PARTIDOS IMPORTANTES -->
+                                    {% if datos.partidos_finales %}
+                                    <h6 class="mt-4">🏐 Partidos clave:</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ronda</th>
+                                                    <th>Partido</th>
+                                                    <th>Resultado</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for partido in datos.partidos_finales %}
+                                                <tr>
+                                                    <td><span class="badge bg-secondary">{{ partido.get_ronda_display }}</span></td>
+                                                    <td>
+                                                        {{ partido.equipo_local|default:"Por definir" }} vs 
+                                                        {{ partido.equipo_visitante|default:"Por definir" }}
+                                                    </td>
+                                                    <td>
+                                                        {% if partido.terminado and partido.ganador %}
+                                                        <span class="badge bg-success">Ganó: {{ partido.ganador.nombre }}</span>
+                                                        {% else %}
+                                                        <span class="text-muted">No jugado</span>
                                                         {% endif %}
-                                                    </h6>
-                                                    
-                                                    <div class="mt-2">
-                                                        <small class="text-muted">Jugadores ({{ equipo_data.total_jugadores }}):</small>
-                                                        <div class="mt-1">
-                                                            {% for jugador in equipo_data.jugadores %}
-                                                            <div class="jugador-item d-flex justify-content-between">
-                                                                <span>{{ jugador.nombre }}</span>
-                                                                {% if jugador.capitan %}
-                                                                <span class="badge bg-info">Capitán</span>
-                                                                {% endif %}
-                                                            </div>
-                                                            {% endfor %}
-                                                            
-                                                            {% if equipo_data.total_jugadores > 5 %}
-                                                            <div class="text-center mt-2">
-                                                                <small class="text-muted">
-                                                                    +{{ equipo_data.total_jugadores|add:"-5" }} jugadores más...
-                                                                </small>
-                                                            </div>
-                                                            {% endif %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                        
-                                        <!-- PARTIDOS IMPORTANTES -->
-                                        {% if datos.partidos_finales %}
-                                        <h5 class="mt-4 mb-3">🏐 Partidos Clave</h5>
-                                        <div class="table-responsive">
-                                            <table class="table table-sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Ronda</th>
-                                                        <th>Equipos</th>
-                                                        <th>Resultado</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {% for partido in datos.partidos_finales %}
-                                                    <tr>
-                                                        <td>
-                                                            <span class="badge bg-secondary">
-                                                                {{ partido.get_ronda_display }}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            {{ partido.equipo_local|default:"Por definir" }} vs 
-                                                            {{ partido.equipo_visitante|default:"Por definir" }}
-                                                        </td>
-                                                        <td>
-                                                            {% if partido.terminado and partido.ganador %}
-                                                            <span class="badge bg-success">
-                                                                Ganó: {{ partido.ganador.nombre }}
-                                                            </span>
-                                                            {% else %}
-                                                            <span class="text-muted">No jugado</span>
-                                                            {% endif %}
-                                                        </td>
-                                                    </tr>
-                                                    {% endfor %}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        {% endif %}
-                                        
-                                        <!-- BOTÓN PARA IR AL ADMIN -->
-                                        <div class="text-center mt-4">
-                                            <a href="/admin/torneos/torneo/{{ torneo.id }}/change/" 
-                                               class="btn btn-outline-dark" 
-                                               target="_blank">
-                                                ⚙️ Ver en Panel de Administración
-                                            </a>
-                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
