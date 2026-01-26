@@ -1,18 +1,57 @@
 {% extends "admin/base.html" %}
 
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* FONDO GRIS DE TU APP */
+    body {
+        background: #f7fafc !important;
+    }
+    
+    /* CONTENEDOR PRINCIPAL */
+    #content {
+        background: white;
+        border-radius: 12px;
+        margin: 20px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+    }
+    
+    /* TÍTULO SIN "NONE" */
+    h1 {
+        color: #2c5288;
+        margin-bottom: 30px;
+        font-size: 1.8rem;
+    }
+    
+    /* RESPONSIVE PARA MÓVIL */
+    @media (max-width: 768px) {
+        .btn-ganador {
+            width: 100% !important;
+            margin-bottom: 15px !important;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="padding: 20px;">
+<div style="padding: 15px; font-family: 'Segoe UI', system-ui, sans-serif;">
     <h1>🏆 Marcar Ganador</h1>
     
+    <!-- TARJETA DE INFORMACIÓN -->
     <div style="background: white; border: 1px solid #e2e8f0; padding: 24px; border-radius: 12px; margin: 24px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <h2 style="color: #2d3748; margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 2px solid #4299e1; padding-bottom: 10px;">
-            🏐 Partido: <span style="color: #4299e1;">{{ partido.equipo_local }}</span> vs <span style="color: #4299e1;">{{ partido.equipo_visitante }}</span>
+            🏐 Partido: <span style="color: #4299e1;">{{ partido.equipo_local|default:"Equipo Local" }}</span> vs 
+            <span style="color: #4299e1;">{{ partido.equipo_visitante|default:"Equipo Visitante" }}</span>
         </h2>
         
         <div style="display: flex; flex-wrap: wrap; gap: 20px;">
             <div style="flex: 1; min-width: 200px;">
                 <div style="font-weight: 600; color: #4a5568; margin-bottom: 8px; font-size: 0.9rem;">TORNEO</div>
-                <div style="color: #2d3748; font-size: 1.1rem; font-weight: 500;">{{ partido.torneo.nombre }}</div>
+                <div style="color: #2d3748; font-size: 1.1rem; font-weight: 500;">
+                    {{ partido.torneo.nombre|default:"Torneo sin nombre" }}
+                </div>
             </div>
             
             <div style="flex: 1; min-width: 200px;">
@@ -27,27 +66,87 @@
         </div>
     </div>
     
+    <!-- FORMULARIO DE BOTONES -->
     <form method="POST">
         {% csrf_token %}
         
-        <div style="display: flex; gap: 20px; margin: 30px 0;">
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; margin: 30px 0; justify-content: center;">
+            <!-- BOTÓN EQUIPO LOCAL -->
             <button type="submit" name="ganador_local" 
-                    style="background: #2E7D32; color: white; padding: 15px 30px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer;">
-                ✅ {{ partido.equipo_local }} GANÓ
+                    class="btn-ganador"
+                    style="background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%); 
+                           color: white; 
+                           padding: 15px 25px; 
+                           border: none; 
+                           border-radius: 8px; 
+                           font-size: 16px; 
+                           cursor: pointer;
+                           font-weight: 500;
+                           transition: all 0.2s;
+                           flex: 1;
+                           min-width: 200px;
+                           max-width: 400px;
+                           box-shadow: 0 4px 6px rgba(44, 82, 130, 0.2);">
+                <div style="font-size: 1.2rem; margin-bottom: 5px;">🏆</div>
+                <div style="font-size: 1.1rem;">{{ partido.equipo_local|default:"Equipo Local" }}</div>
+                <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 5px;">GANÓ EL PARTIDO</div>
             </button>
             
+            <!-- BOTÓN EQUIPO VISITANTE -->
             <button type="submit" name="ganador_visitante"
-                    style="background: #1565C0; color: white; padding: 15px 30px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer;">
-                ✅ {{ partido.equipo_visitante }} GANÓ
+                    class="btn-ganador"
+                    style="background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); 
+                           color: white; 
+                           padding: 15px 25px; 
+                           border: none; 
+                           border-radius: 8px; 
+                           font-size: 16px; 
+                           cursor: pointer;
+                           font-weight: 500;
+                           transition: all 0.2s;
+                           flex: 1;
+                           min-width: 200px;
+                           max-width: 400px;
+                           box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);">
+                <div style="font-size: 1.2rem; margin-bottom: 5px;">🏆</div>
+                <div style="font-size: 1.1rem;">{{ partido.equipo_visitante|default:"Equipo Visitante" }}</div>
+                <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 5px;">GANÓ EL PARTIDO</div>
             </button>
         </div>
         
-        <div>
+        <!-- BOTÓN CANCELAR -->
+        <div style="text-align: center; margin-top: 30px;">
             <a href="{% url 'admin:torneos_partido_changelist' %}" 
-               style="display: inline-block; padding: 10px 20px; background: #666; color: white; text-decoration: none; border-radius: 4px;">
+               style="display: inline-block; 
+                      padding: 12px 25px; 
+                      background: #4a5568; 
+                      color: white; 
+                      text-decoration: none; 
+                      border-radius: 6px;
+                      font-weight: 500;
+                      transition: all 0.2s;
+                      border: none;">
                 ↩️ Cancelar y volver
             </a>
         </div>
     </form>
 </div>
+
+<!-- HOVER EFFECTS CON JAVASCRIPT -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Efectos hover para botones
+        document.querySelectorAll('.btn-ganador').forEach(btn => {
+            btn.addEventListener('mouseover', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 6px 12px rgba(0,0,0,0.15)';
+            });
+            
+            btn.addEventListener('mouseout', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            });
+        });
+    });
+</script>
 {% endblock %}

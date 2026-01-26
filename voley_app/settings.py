@@ -139,10 +139,6 @@ else:
     print("✅ Ejecutando localmente")
     
 ADMIN_INTERFACE_CONFIG = {
-    # ... otras configuraciones si las tienes ...
-    
-    # Deshabilitar acciones recientes
-    'SHOW_RECENT_ACTIONS': False,
-    
-
+    'site_title': 'Gestión de torneos de Voleibol',
+    'site_header': 'Voleibol',
 }
