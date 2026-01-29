@@ -39,7 +39,7 @@ class PartidoAdmin(admin.ModelAdmin):
             
             url = reverse('admin:marcar_ganador', args=[obj.id])
             return format_html(
-                '<a class="button" href="{}" style="background: #2c5282; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-block; min-width: 140px; text-align: center; border: none;">🏆 Marcar Ganador</a>',
+                '<a class="button" href="{}" style="background: #2c5282; color: white; padding: 8px 10px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-block; min-width: fit-content; text-align: center; border: none;">🏆 GANADOR</a>',
                 url
             )
         return '-'
@@ -134,7 +134,7 @@ class TorneoAdminSimple(admin.ModelAdmin):
         # Botón para preparar torneo
         url = reverse('admin:preparar_torneo', args=[obj.id])
         return format_html(
-            '<a class="button" href="{}" style="background: #4299e1; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-block; min-width: 160px; text-align: center; border: none;">🎯 PREPARAR TORNEO</a>',
+            '<a class="button" href="{}" style="background: #4299e1; color: white; padding: 10px 12px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-block; min-width: fit-content; text-align: center; border: none;">🎯 GENERAR</a>',
             url
         )
     boton_preparar.short_description = 'Acción'
